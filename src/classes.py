@@ -1,13 +1,11 @@
 # http://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/
-import os
-import sys
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
 Base = declarative_base()
- 
+
 class IP(Base):
     __tablename__ = 'ip'
     id = Column(Integer, primary_key=True)
@@ -23,6 +21,11 @@ class PortScan(Base):
     ip_id = Column(Integer, ForeignKey('ip.id'))
     ip = relationship(IP)
 
-engine = create_engine('sqlite:///sqlalchemy_example.db')
- 
+
+db = ''.join(chr(ord(a) ^ ord(b))
+             for a,b in zip(username, password))
+m = hashlib.md5()
+m.update(db)
+
+engine = create_engine('sqlite:///%s.db' % (m.hexdigest()))
 Base.metadata.create_all(engine)
