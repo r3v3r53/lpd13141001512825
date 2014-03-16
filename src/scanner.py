@@ -1,5 +1,13 @@
 #!/usr/bin/python
 import sys, getopt, argparse
+import os
+import sys
+import hashlib
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy import create_engine
+import classes
 
 def main(argv):
     parser = argparse.ArgumentParser()
@@ -27,10 +35,11 @@ def main(argv):
                         required=False,
                         help="Port or IP to end")
     args = parser.parse_args()
+
+
     
     if args.action == 'portscan':
-        import PortScan
         print "Starting Portscan:", args.start, "-", args.end
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main(sys.argv[1:])
