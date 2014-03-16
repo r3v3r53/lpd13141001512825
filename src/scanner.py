@@ -2,12 +2,12 @@
 import sys, getopt, argparse
 import os
 import sys
-import hashlib
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
-import classes
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from classes import IP, PortScan, Con
+ 
+Base = declarative_base()
 
 def main(argv):
     parser = argparse.ArgumentParser()
@@ -34,10 +34,11 @@ def main(argv):
     parser.add_argument("-e", "--end",
                         required=False,
                         help="Port or IP to end")
+
     args = parser.parse_args()
+    con = Con(args.username, args.password)
 
-
-    
+   
     if args.action == 'portscan':
         print "Starting Portscan:", args.start, "-", args.end
 
