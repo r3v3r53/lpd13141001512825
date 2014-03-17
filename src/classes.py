@@ -37,5 +37,6 @@ class Con:
         m = hashlib.md5()
         m.update(db)
         self.hash = m.hexdigest()
+        self.db_name = self.hash , ".db"
         engine = create_engine('sqlite:///%s.db' % self.hash)
         Base.metadata.create_all(engine)
