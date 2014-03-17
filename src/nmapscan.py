@@ -3,27 +3,26 @@ import nmap
 import sys
 
 def main(arg1, arg2):
-
 	nm = nmap.PortScanner()
 	nm.scan(arg1, arg2)
-	nm.scaninfo()
-	nm.all_hosts()
-	print nm.all_hosts()
-	
+	#print nm.scaninfo()
+	#print nm.all_hosts()
 	for host in nm.all_hosts():
-		print ('%s (%s)' % (host, nm[host].hostname() ) )
+		print('----------------------------------------------------')
+		print('Host : %s (%s)' % (host, nm[host].hostname()))
+		print('State : %s' % nm[host].state())
+
 		for proto in nm[host].all_protocols():
-			print ( 'Protocol: %s' % (proto) )
+			print('----------')
+			print('Protocol : %s' % proto)
+
 			lport = nm[host][proto].keys()
 			lport.sort()
+			print "Ports:",
 			for port in lport:
-				print "port:", port, type(port)
-				print """__________________________________
-				Host: %s (%s)' - %s
-				Protocol: %s
-				Port: %s - %s'
-				__________________________________"
-				"""%(host, nm[host].hostname(), nm[host].state(),protocol,port,nm[host][protocol][port]['state'])
+				print ('%s (%s), ' % (port, nm[host][proto][port]['state'])),
+			print ""
+
 
 if __name__ == "__main__":
      if len(sys.argv) == 3:
@@ -32,7 +31,7 @@ if __name__ == "__main__":
 		print """____________________________
         Usage :
 		python code.py ipaddr startport-endport
-		python code.py 120.0.0.1 22-443
+		python code.py 192.168.1.254 22-443 
 		_________________________________"""
 		sys.exit()
 		       
