@@ -15,3 +15,4 @@ class ConScan:
             for c in con:
                 if len(c.raddr) > 0:
                     print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status)
+                    print p
