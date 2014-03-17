@@ -20,21 +20,15 @@ def main(argv):
                         required=True,
                         choices=["portscan", "conscan", "logscan"],
                         help="Perform a scan for ips in a network")
-    parser.add_argument("-f", "--filename",
-                        required=False,
-                        help="Filename to save")
     parser.add_argument("-ip",
                         required=False,
                         help="IP to Port Scan")
-    parser.add_argument("-g", "--group",
-                        required=False,
-                        help="How info is to be grouped in the report")
     parser.add_argument("-s", "--start",
                         required=False,
-                        help="Port or IP to start")
+                        help="Port, IP or Date to start")
     parser.add_argument("-e", "--end",
                         required=False,
-                        help="Port or IP to end")
+                        help="Port or IP or Date to end")
 
     args = parser.parse_args()
     con = Con(args.username, args.password)
@@ -42,8 +36,9 @@ def main(argv):
     if args.action == 'portscan':
         print "Starting Portscan:", args.start, "-", args.end
     elif args.action == 'conscan':
-        scan = ConScan()
-        scan.scan()
+        scan = ConScan(con.db_name)
+        results = scan.scan()
+        
 
 if __name__ == "__main__":
     main(sys.argv[1:])
