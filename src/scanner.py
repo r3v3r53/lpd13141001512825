@@ -38,7 +38,6 @@ def main(argv):
 
     args = parser.parse_args()
     con = Con(args.username, args.password)
-
    
     if args.action == 'portscan':
         print "Starting Portscan:", args.start, "-", args.end
