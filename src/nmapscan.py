@@ -8,6 +8,8 @@ def main(arg1, arg2):
 	nm.scan(arg1, arg2)
 	nm.scaninfo()
 	nm.all_hosts()
+	print nm.all_hosts()
+	
 	for host in nm.all_hosts():
 		print ('%s (%s)' % (host, nm[host].hostname() ) )
 		for proto in nm[host].all_protocols():
