@@ -13,11 +13,5 @@ class ConScan:
             program = p.name
             con = p.get_connections(kind='inet') #or all
             for c in con:
-                print c
-                continue
-                print c.local_address
-                remoteaddr = ""
-                if c.remote_address:
-                    raddr = "%s:%s" % (c.remote_address)
-                    print("%-8s %-22s %-22s %-13s %-6s %s"% (proto_map[(c.family, c.type)],localaddr,remoteaddr,str(c.status),p.pid,program[:15]))
-                                                                                                    
+                if len(c.raddr) > 0:
+                    print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status)
