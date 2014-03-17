@@ -5,7 +5,7 @@ import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from classes import IP, PortScanDB, ConScanDB, Con
+from classes import Con
 from ConScan import ConScan
  
 Base = declarative_base()

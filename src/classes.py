@@ -11,14 +11,16 @@ Base = declarative_base()
 class IP(Base):
     __tablename__ = 'ip'
     id = Column(Integer, primary_key=True)
-    ip = Column(String(15), nullable=False)
+    ip = Column(String(15), nullable=False, unique=True)
  
 class PortScanDB(Base):
     __tablename__ = 'portscan'
     id = Column(Integer, primary_key=True)
     port = Column(Integer, nullable=False)
     time = Column(DateTime)
-    ip_id = Column(Integer, ForeignKey('ip.id'))
+    ip_id = Column(Integer, ForeignKey('ip.id', 
+                                       onupdate="CASCADE", 
+                                       ondelete="CASCADE"))
     ip = relationship(IP)
 
 class ConScanDB(Base):
@@ -27,7 +29,9 @@ class ConScanDB(Base):
     local_port = Column(Integer, nullable=False)
     remote_port = Column(Integer, nullable=False)
     time = Column(DateTime)
-    remote_ip_id = Column(Integer, ForeignKey('ip.id'))
+    remote_ip_id = Column(Integer, ForeignKey('ip.id',
+                                              onupdate="CASCADE",
+                                              ondelete="CASCADE"))
     remote_ip = relationship(IP)
 
 class Con:
