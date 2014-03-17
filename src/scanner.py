@@ -5,7 +5,8 @@ import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from classes import IP, PortScan, Con
+from classes import IP, PortScanDB, ConScanDB, Con
+from ConScan import ConScan
  
 Base = declarative_base()
 
@@ -41,6 +42,9 @@ def main(argv):
    
     if args.action == 'portscan':
         print "Starting Portscan:", args.start, "-", args.end
+    elif args.action == 'conscan':
+        scan = ConScan()
+        scan.scan()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
