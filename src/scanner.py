@@ -36,7 +36,7 @@ def main(argv):
     if args.action == 'portscan':
         print "Starting Portscan:", args.start, "-", args.end
     elif args.action == 'conscan':
-        scan = ConScan(con.db_name)
+        scan = ConScan(con.db_name, con.base)
         results = scan.scan()
         
 

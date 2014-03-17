@@ -36,11 +36,12 @@ class ConScanDB(Base):
 
 class Con:
     def __init__(self, username, password):
+        self.base = Base
         db = ''.join(chr(ord(a) ^ ord(b))
                      for a,b in zip(username, password))
         m = hashlib.md5()
         m.update(db)
         self.hash = m.hexdigest()
-        self.db_name = self.hash , ".db"
+        self.db_name = '%s.db' % self.hash
         engine = create_engine('sqlite:///%s.db' % self.hash)
         Base.metadata.create_all(engine)
