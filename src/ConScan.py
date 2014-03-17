@@ -1,6 +1,7 @@
 import psutil
 import socket
 from socket import AF_INET, SOCK_STREAM, SOCK_DGRAM
+from classes import IP, ConScanDB
 
 class ConScan:
     def scan(self):
@@ -14,5 +15,4 @@ class ConScan:
             con = p.get_connections(kind='inet') #or all
             for c in con:
                 if len(c.raddr) > 0:
-                    print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status)
-                    print p
+                    print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s, Name: %s, Pid: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status, p.name(), p.pid)
