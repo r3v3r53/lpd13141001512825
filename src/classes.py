@@ -2,6 +2,9 @@
 #
 # Parte de tentar cifrar / decifrar a bd
 # http://stackoverflow.com/questions/16761458/how-to-aes-encrypt-decrypt-files-using-python-pycrypto-in-an-openssl-compatible
+#
+# ESTE PARECE MAIS SIMPLES:
+# http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
