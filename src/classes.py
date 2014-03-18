@@ -1,6 +1,5 @@
 # http://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/
 #
-# ESTE PARECE MAIS SIMPLES:
 # http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
@@ -11,7 +10,6 @@ from Crypto.Cipher import AES
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
 
 class IP(Base):
     __tablename__ = 'ip'
@@ -39,6 +37,17 @@ class ConScanDB(Base):
                                               ondelete="CASCADE"))
     remote_ip = relationship(IP)
 
+class NmapScanDB(Base):
+    __tablename__ = 'nmapscan'
+    id = Column(Integer, primary_key=True)
+    port = Column(Integer, nullable=False)
+    time = Column(DateTime)
+    protocol = Column(String(15))
+    ip_id = Column(Integer, ForeignKey('ip.id',
+                                       onupdate="CASCADE",
+                                       ondelete="CASCADE"))
+    ip = relationship(IP)
+
 class Con:
     def __init__(self, username, password):
         self.base = Base
@@ -60,6 +69,7 @@ class Con:
             self.decrypt_file(self.db_name, self.password)
         except:
             pass
+        print self.db_name
         engine = create_engine('sqlite:///%s' % self.db_name)
         Base.metadata.create_all(engine)
 
@@ -95,6 +105,3 @@ class Con:
     def close(self):
         self.encrypt_file(self.db_name, self.password)
         pass
-   
-# encrypt_file('to_enc.txt', key)
-# decrypt_file('to_enc.txt.enc', key)
