@@ -38,7 +38,8 @@ def main(argv):
     elif args.action == 'conscan':
         scan = ConScan(con.db_name, con.base)
         results = scan.scan()
-        
+    
+    con.close()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
