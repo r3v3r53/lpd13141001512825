@@ -1,17 +1,13 @@
 # http://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/
 #
-# Parte de tentar cifrar / decifrar a bd
-# http://stackoverflow.com/questions/16761458/how-to-aes-encrypt-decrypt-files-using-python-pycrypto-in-an-openssl-compatible
-#
 # ESTE PARECE MAIS SIMPLES:
 # http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 import hashlib
-from hashlib import md5
-from Crypto.Cipher import AES
 from Crypto import Random
+from Crypto.Cipher import AES
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -46,57 +42,59 @@ class ConScanDB(Base):
 class Con:
     def __init__(self, username, password):
         self.base = Base
+        u = hashlib.md5()
+        u.update(username)
+        self.username = u.hexdigest()
+        p = hashlib.md5()
+        p.update(password)
+        self.password = p.hexdigest()
+
         db = ''.join(chr(ord(a) ^ ord(b))
-                     for a,b in zip(username, password))
-        m = md5()
+                     for a,b in zip(self.username, self.password))
+        m = hashlib.md5()
         m.update(db)
-        p = md5(password)
-        self.psw = p.hexdigest()
         self.hash = m.hexdigest()
         self.db_name = '%s.db' % self.hash
-        with open(self.db_name, 'rb') as in_file, open(self.db_name, 'wb') as out_file:
-            decrypt(in_file, out_file, psw)
-        engine = create_engine('sqlite:///%s.db' % self.hash)
+        
+        try:
+            self.decrypt_file(self.db_name, self.password)
+        except:
+            pass
+        engine = create_engine('sqlite:///%s' % self.db_name)
         Base.metadata.create_all(engine)
 
-    def derive_key_and_iv(password, salt, key_length, iv_length):
-        d = d_i = ''
-        while len(d) < key_length + iv_length:
-            d_i = md5(d_i + password + salt).digest()
-            d += d_i
-        return d[:key_length], d[key_length:key_length+iv_length]
+    def pad(self, s):
+        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
 
-    def encrypt(in_file, out_file, password, key_length=256):
-        bs = AES.block_size
-        salt = Random.new().read(bs - len('Salted__'))
-        key, iv = derive_key_and_iv(password, salt, key_length, bs)
+    def encrypt(self, message, key, key_size=256):
+        message = self.pad(message)
+        iv = Random.new().read(AES.block_size)
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        out_file.write('Salted__' + salt)
-        finished = False
-        while not finished:
-            chunk = in_file.read(1024 * bs)
-            if len(chunk) == 0 or len(chunk) % bs != 0:
-                padding_length = (bs - len(chunk) % bs) or bs
-                chunk += padding_length * chr(padding_length)
-                finished = True
-            out_file.write(cipher.encrypt(chunk))
-            
-    def decrypt(in_file, out_file, password, key_length=32):
-        bs = AES.block_size
-        salt = in_file.read(bs)[len('Salted__'):]
-        key, iv = derive_key_and_iv(password, salt, key_length, bs)
+        return iv + cipher.encrypt(message)
+
+    def decrypt(self, ciphertext, key):
+        iv = ciphertext[:AES.block_size]
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        next_chunk = ''
-        finished = False
-        while not finished:
-            chunk, next_chunk = next_chunk, cipher.decrypt(in_file.read(1024 * bs))
-            if len(next_chunk) == 0:
-                padding_length = ord(chunk[-1])
-                chunk = chunk[:-padding_length]
-                finished = True
-        out_file.write(chunk)
+        plaintext = cipher.decrypt(ciphertext[AES.block_size:])
+        return plaintext.rstrip(b"\0")
+    
+    def encrypt_file(self, file_name, key):
+        with open(file_name, 'rb') as fo:
+            plaintext = fo.read()
+        enc = self.encrypt(plaintext, key)
+        with open(file_name, 'wb') as fo:
+            fo.write(enc)
+
+    def decrypt_file(self, file_name, key):
+        with open(file_name, 'rb') as fo:
+            ciphertext = fo.read()
+        dec = self.decrypt(ciphertext, key)
+        with open(file_name, 'wb') as fo:
+            fo.write(dec)
 
     def close(self):
-        with open(self.db_name, 'rb') as in_file, open(self.db_name, 'wb') as out_file:
-            encrypt(in_file, out_file, self.psw)
-
+        self.encrypt_file(self.db_name, self.password)
+        pass
+   
+# encrypt_file('to_enc.txt', key)
+# decrypt_file('to_enc.txt.enc', key)
