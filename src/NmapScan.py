@@ -51,3 +51,4 @@ class NmapScan:
                                                 protocol=proto,
                                                 ip=ip_address)
                             self.session.add(nmp)
+        self.session.commit()
