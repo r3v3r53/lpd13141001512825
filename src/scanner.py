@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from classes import Con
 from ConScan import ConScan
 from NmapScan import NmapScan
+from LogScan import LogScan
  
 Base = declarative_base()
 
@@ -27,6 +28,10 @@ def main(argv):
     parser.add_argument("-ports",
                         required=False,
                         help="Port (or range) to scan")
+    parser.add_argument("-f", "--file",
+                        required=False,
+                        help="Log File to scan")
+                        
 
     args = parser.parse_args()
     con = Con(args.username, args.password)
@@ -36,6 +41,9 @@ def main(argv):
         
     elif args.action == 'conscan':
         scan = ConScan(con.db_name, con.base)
+
+    elif args.action == 'logscan':
+        scan = LogScan(con.db_name, con.base, args.file)
         
     try:
         scan.scan()
