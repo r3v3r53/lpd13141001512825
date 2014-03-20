@@ -35,9 +35,9 @@ def main(argv):
     parser.add_argument("-t", "--type",
                         required=False,
                         help="Type of export (pdf, csv or db)")
-    parser.add_argument("-filename",
+    parser.add_argument("-filename", nargs=2, metavar=('name','type'),
                         required=False,
-                        help="File name to export")
+                        help="File name and type to export")
                         
 
     args = parser.parse_args()
@@ -52,6 +52,7 @@ def main(argv):
     elif args.action == 'logscan':
         scan = LogScan(con.db_name, con.base, args.file)
     elif args.action == 'export':
+        print args.filename
         scan = Export(con.db_name, args.type, args.filename)
     try:
         scan.scan()
