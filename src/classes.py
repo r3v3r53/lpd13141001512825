@@ -29,13 +29,21 @@ class PortScanDB(Base):
 class LogScanDB(Base):
     __tablename__ = 'logscan'
     id = Column(Integer, primary_key=True)
-    local_port = Column(Integer, nullable=False)
-    remote_port = Column(Integer, nullable=False)
     time = Column(DateTime)
-    remote_ip_id = Column(Integer, ForeignKey('ip.id',
-                                              onupdate="CASCADE",
-                                              ondelete="CASCADE"))
-    remote_ip = relationship(IP)
+    ipsrc_id = Column(Integer, ForeignKey('ip.id',
+                                            onupdate="CASCADE",
+                                            ondelete="CASCADE"))
+    event_src = Column(String(10))
+    device = Column(String(5))
+    protocol = Column(String(10))
+    ttl = Column(Integer)
+    src_port = Column(Integer)
+    dst_port = Column(Integer)
+    country = Column(String(5))
+    country_name = Column(String(50))
+    lon = Column(String(50))
+    lat = Column(String(50))
+    ipsrc = relationship(IP)
     
 class ConScanDB(Base):
     __tablename__ = 'conscan'
