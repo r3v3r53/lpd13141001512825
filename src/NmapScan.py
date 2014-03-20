@@ -17,9 +17,11 @@ class NmapScan:
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
 
+
     def scan(self):
         nm = nmap.PortScanner()
         nm.scan(self.ip, self.port)
+        now = datetime.now()
         for host in nm.all_hosts():
             new_ip = IP(ip=host)
             #check if ip address is in database
@@ -43,9 +45,9 @@ class NmapScan:
 			lport.sort()
 			print "Ports:"
 			for p in lport:
-                            print port
-                            nmap = NmapScanDBDB(port=p,
+                            print p
+                            nmp = NmapScanDB(port=p,
                                                 time=now,
                                                 protocol=proto,
                                                 ip=ip_address)
-                            self.session.add(nmap)
+                            self.session.add(nmp)
