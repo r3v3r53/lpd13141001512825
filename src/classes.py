@@ -26,6 +26,17 @@ class PortScanDB(Base):
                                        ondelete="CASCADE"))
     ip = relationship(IP)
 
+class LogScanDB(Base):
+    __tablename__ = 'logscan'
+    id = Column(Integer, primary_key=True)
+    local_port = Column(Integer, nullable=False)
+    remote_port = Column(Integer, nullable=False)
+    time = Column(DateTime)
+    remote_ip_id = Column(Integer, ForeignKey('ip.id',
+                                              onupdate="CASCADE",
+                                              ondelete="CASCADE"))
+    remote_ip = relationship(IP)
+    
 class ConScanDB(Base):
     __tablename__ = 'conscan'
     id = Column(Integer, primary_key=True)
