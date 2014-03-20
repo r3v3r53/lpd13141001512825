@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# ver ArgumentParser.add_subparsers
+# http://docs.python.org/2/library/argparse.html#choices
 import sys, getopt, argparse
 import os
 import sys
