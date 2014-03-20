@@ -88,7 +88,6 @@ class Con:
             self.decrypt_file(self.db_name, self.password)
         except:
             pass
-        print self.db_name
         engine = create_engine('sqlite:///%s' % self.db_name)
         Base.metadata.create_all(engine)
 
@@ -119,7 +118,7 @@ class Con:
             ciphertext = fo.read()
         dec = self.decrypt(ciphertext, key)
         with open(file_name, 'wb') as fo:
-            fo.write(dec)
+            fo.write(dec)        
 
     def close(self):
         self.encrypt_file(self.db_name, self.password)

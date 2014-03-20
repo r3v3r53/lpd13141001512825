@@ -9,6 +9,7 @@ from classes import Con
 from ConScan import ConScan
 from NmapScan import NmapScan
 from LogScan import LogScan
+from Export import Export
  
 Base = declarative_base()
 
@@ -20,7 +21,7 @@ def main(argv):
                         required=True)
     parser.add_argument("-a", "--action",
                         required=True,
-                        choices=["portscan", "conscan", "logscan"],
+                        choices=["portscan", "conscan", "logscan", "export"],
                         help="Perform a scan for ips in a network")
     parser.add_argument("-ip",
                         required=False,
@@ -31,6 +32,12 @@ def main(argv):
     parser.add_argument("-f", "--file",
                         required=False,
                         help="Log File to scan")
+    parser.add_argument("-t", "--type",
+                        required=False,
+                        help="Type of export (pdf, csv or db)")
+    parser.add_argument("-filename",
+                        required=False,
+                        help="File name to export")
                         
 
     args = parser.parse_args()
@@ -44,7 +51,8 @@ def main(argv):
 
     elif args.action == 'logscan':
         scan = LogScan(con.db_name, con.base, args.file)
-        
+    elif args.action == 'export':
+        scan = Export(con.db_name, args.type, args.filename)
     try:
         scan.scan()
     finally:
