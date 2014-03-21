@@ -4,6 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from classes import NmapScanDB, ConScanDB, LogScanDB
 from datetime import datetime
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+
 import csv
 
 class Export:
@@ -86,6 +89,49 @@ class Export:
 
     def pdf(self):
         try:
-            print "File saved to %s.pdf" % self.filename
+            filename = "%s.pdf" % self.filename
+            c = canvas.Canvas(filename)
+            textobject = c.beginText()
+            textobject.setTextOrigin(inch, 10 * inch)
+            textobject.setFont("Helvetica-Oblique", 14)
+            
+            conscans = self.session.query(ConScanDB).all()
+            textobject.textLine("LOCAL CONNECTIONS")
+            textobject.textLine("[Time], [Local Port], [Remote IP], [Remote Port]")       
+            for line in conscans:
+		textobject.textLine("%s, %s, %s, %s" % (
+                        line.time,
+                        line.local_port, 
+                        line.remote_ip.ip, 
+                        line.remote_port))
+            textobject.setFillGray(0.4)
+
+            portscans = self.session.query(NmapScanDB).all()
+            textobject.textLine("PORT SCANS")
+            textobject.textLine("[Time], [IP], [Protocol], [Port]")       
+            for line in portscans:
+		textobject.textLine("%s, %s, %s, %s" % (
+                        line.time,
+                        line.ip.ip, 
+                        line.protocol, 
+                        line.port))
+
+            logscans = self.session.query(LogScanDB).all()
+            textobject.textLine("LOG SCANS")
+            textobject.textLine("[Time], [IP], [Event], [Device], [Protocol], [TTL], [Src Port], [Dst Port]")       
+            for line in logscans:
+		textobject.textLine("%s, %s, %s, %s, %s, %s, %s, %s" % (
+                        line.time,
+                        line.ipsrc.ip, 
+                        line.event_src, 
+                        line.device,
+                        line.protocol,
+                        line.ttl,
+                        line.src_port,
+                        line.dst_port))
+
+            c.drawText(textobject)
+            c.save()
+            print "File saved to %s" % filename
         except Exception as e:
             print "Erro: %s" % e
