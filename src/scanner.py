@@ -14,7 +14,9 @@ from LogScan import LogScan
 from Export import Export
  
 Base = declarative_base()
-
+'''
+Documentacao disto
+'''
 def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--username",
