@@ -32,23 +32,23 @@ class NmapScan:
                 ip_address = new_ip
 
 
-		print('----------------------------------------------------')
-		print('Host : %s (%s)' % (host, nm[host].hostname()))
-		print('State : %s' % nm[host].state())
+            print('----------------------------------------------------')
+            print('Host : %s (%s)' % (host, nm[host].hostname()))
+            print('State : %s' % nm[host].state())
 
-		for proto in nm[host].all_protocols():
-                    if proto in ['tcp', 'udp']:
-			print('----------')
-			print('Protocol : %s' % proto)
+            for proto in nm[host].all_protocols():
+                if proto in ['tcp', 'udp']:
+                    print('----------')
+                    print('Protocol : %s' % proto)
 
-			lport = nm[host][proto].keys()
-			lport.sort()
-			print "Ports:"
-			for p in lport:
-                            print p
-                            nmp = NmapScanDB(port=p,
-                                                time=now,
-                                                protocol=proto,
-                                                ip=ip_address)
-                            self.session.add(nmp)
+                    lport = nm[host][proto].keys()
+                    lport.sort()
+                    print "Ports:"
+                    for p in lport:
+                        print p
+                        nmp = NmapScanDB(port=p,
+                                         time=now,
+                                         protocol=proto,
+                                         ip=ip_address)
+                        self.session.add(nmp)
         self.session.commit()
