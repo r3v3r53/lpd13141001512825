@@ -159,8 +159,8 @@ class Export:
             tblStyle = TableStyle([('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                                    ('VALIGN',(0,0),(-1,-1),'TOP'),
                                    ('LINEBELOW',(0,0),(-1,-1),1,colors.black),
-                                   ('BOX',(0,0),(-1,-1),1,colors.black),
-                                   ('BOX',(0,0),(0,0),1,colors.black)])
+                                   ('INNERGRID',(0,0),(-1,-1),1,colors.black),
+                                   ('BOX',(0,0),(-1,-1),1,colors.black)])
             tblStyle.add('BACKGROUND',(0,0),(-1,-1),colors.lightblue)
             tblStyle.add('BACKGROUND',(0,1),(-1,-1),colors.white)
             
