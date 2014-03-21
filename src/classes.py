@@ -16,15 +16,6 @@ class IP(Base):
     id = Column(Integer, primary_key=True)
     ip = Column(String(15), nullable=False, unique=True)
  
-class PortScanDB(Base):
-    __tablename__ = 'portscan'
-    id = Column(Integer, primary_key=True)
-    port = Column(Integer, nullable=False)
-    time = Column(DateTime)
-    ip_id = Column(Integer, ForeignKey('ip.id', 
-                                       onupdate="CASCADE", 
-                                       ondelete="CASCADE"))
-    ip = relationship(IP)
 
 class LogScanDB(Base):
     __tablename__ = 'logscan'
@@ -57,7 +48,7 @@ class ConScanDB(Base):
     remote_ip = relationship(IP)
 
 class NmapScanDB(Base):
-    __tablename__ = 'nmapscan'
+    __tablename__ = 'portscan'
     id = Column(Integer, primary_key=True)
     port = Column(Integer, nullable=False)
     time = Column(DateTime)

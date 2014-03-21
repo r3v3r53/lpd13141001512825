@@ -54,8 +54,7 @@ def main(argv):
     elif args.action == 'logscan':
         scan = LogScan(con.db_name, con.base, args.file)
     elif args.action == 'export':
-        print args.filename
-        scan = Export(con.db_name, args.type, args.filename)
+        scan = Export(con.db_name, con.base, args.filename[0], args.filename[1])
     try:
         scan.scan()
     finally:
