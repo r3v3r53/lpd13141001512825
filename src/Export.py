@@ -131,16 +131,17 @@ class Export:
             data = [["LOG SCANS"]]
             elements.append(self.drawTable(data, 1))
 
-            data = [["Time","IP", "Evt", "Dev", "Proto", "TTL", "SrcPrt", "DstPrt"]]
+            data = [["Time","IP", "Dev", "Proto", "TTL", "SrcPrt", "DstPrt", "Country"]]
             for line in scans:
 		data.append([line.time,
-                             line.ipsrc.ip, 
-                             line.event_src, 
+                             Paragraph("<a href='https://maps.google.com/maps?ll=%s,%s'>%s</a>" % (line.lat, line.lon, line.ipsrc.ip), 
+                                       styles["Normal"]), 
                              line.device,
                              line.protocol,
                              line.ttl,
                              line.src_port,
-                             line.dst_port])
+                             line.dst_port,
+                             line.country_name])
             elements.append(self.drawTable(data))
             doc.build(elements)
             print "File saved to %s" % filename
