@@ -1,11 +1,10 @@
 #!/usr/bin/python
 import re
-from pygeoip import GeoIP
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from classes import IP, LogScanDB
 from datetime import datetime
-
+import GeoIP
 
 class LogScan:
     def __init__(self, db_name, base, logfile):
@@ -17,9 +16,7 @@ class LogScan:
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
         self.logfile = logfile
-        self.gic = GeoIP('GeoIP.dat')
-        self.giv6 = GeoIP('GeoIP.dat')
-
+        self.scan()
 
     def scan(self):
         try:
@@ -65,18 +62,15 @@ class LogScan:
                     #DESTINATION PORT
                         dpt=line.split("DPT=")
                         dptPort=dpt[1].split(' ')[0]
-                        #data=self.gic.record_by_addr(IP)
-                        #cty = data['country_code']
-                        #ctyName =data['country_name']
-                        #longitude = data['longitude']
-                        #latitude = data['latitude']
                         ttlinf=line.split("TTL=")
                         ttlData=str(ttlinf[1].split(' ')[0])
                     else:
-                        #cty=self.giv6.country_code_by_addr_v6(IP)
+                        continue
                         pass
+                    gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
+                    geo = gi.record_by_addr(ip_src)        
+                    new_ip = IP(ip=ip_src, country=geo['country_code'], country_name=geo['country_name'], lon=geo['longitude'], lat=geo['latitude'])
                     
-                    new_ip = IP(ip=ip_src)
             #check if ip address is in database
                     ip_address = self.session.query(IP).filter_by(ip=ip_src).first()
 
@@ -92,11 +86,7 @@ class LogScan:
                         protocol = protoInf,
                         ttl = ttlData,
                         src_port = sptPort,
-                        dst_port = dptPort,
-                        country = '',#cty,
-                        country_name = '',#ctyName,
-                        lon = '',#longitude,
-                        lat = ''#latitude
+                        dst_port = dptPort
                         )
                     self.session.add(log)
                 except Exception as e:

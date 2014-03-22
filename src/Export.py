@@ -24,6 +24,7 @@ class Export:
         self.base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
+        self.scan()
 
     def scan(self):
         if self.filetype == "db":
@@ -109,7 +110,8 @@ class Export:
             for line in scans:
 		data.append([line.time,
                              line.local_port, 
-                             line.remote_ip.ip, 
+                             Paragraph("<a href='https://maps.google.com/maps?q=loc:%s,%s'>%s</a>" % (line.ipsrc.lat, line.ipsrc.lon, line.ipsrc.ip), 
+                                       styles["Normal"]), 
                              line.remote_port])
             elements.append(self.drawTable(data))
 
@@ -121,7 +123,8 @@ class Export:
             data = [["Time","IP", "Protocol", "Port"]]
             for line in scans:
 		data.append([line.time,
-                             line.ip.ip, 
+                             Paragraph("<a href='https://maps.google.com/maps?q=loc:%s,%s'>%s</a>" % (line.ip.lat, line.ip.lon, line.ip.ip), 
+                                       styles["Normal"]), 
                              line.protocol, 
                              line.port])
             elements.append(self.drawTable(data))
@@ -134,14 +137,14 @@ class Export:
             data = [["Time","IP", "Dev", "Proto", "TTL", "SrcPrt", "DstPrt", "Country"]]
             for line in scans:
 		data.append([line.time,
-                             Paragraph("<a href='https://maps.google.com/maps?ll=%s,%s'>%s</a>" % (line.lat, line.lon, line.ipsrc.ip), 
+                             Paragraph("<a href='https://maps.google.com/maps?q=loc:%s,%s'>%s</a>" % (line.ipsrc.lat, line.ipsrc.lon, line.ipsrc.ip), 
                                        styles["Normal"]), 
                              line.device,
                              line.protocol,
                              line.ttl,
                              line.src_port,
                              line.dst_port,
-                             line.country_name])
+                             line.ipsrc.country_name])
             elements.append(self.drawTable(data))
             doc.build(elements)
             print "File saved to %s" % filename
