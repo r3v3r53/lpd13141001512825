@@ -1,6 +1,11 @@
 # http://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/
 #
 # http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes 
+# pip install -U setuptools
+# https://github.com/maxmind/geoip-api-python
+# apt-get install libgeoip-dev --> https://trac.torproject.org/projects/tor/ticket/10625
+# https://github.com/maxmind/geoip-api-python/blob/master/README.rst
+# http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -8,6 +13,7 @@ import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
 from sqlalchemy.ext.declarative import declarative_base
+from os import remove
 
 Base = declarative_base()
 
@@ -15,7 +21,10 @@ class IP(Base):
     __tablename__ = 'ip'
     id = Column(Integer, primary_key=True)
     ip = Column(String(15), nullable=False, unique=True)
- 
+    country = Column(String(5))
+    country_name = Column(String(50))
+    lon = Column(String(50))
+    lat = Column(String(50))
 
 class LogScanDB(Base):
     __tablename__ = 'logscan'
@@ -30,10 +39,6 @@ class LogScanDB(Base):
     ttl = Column(Integer)
     src_port = Column(Integer)
     dst_port = Column(Integer)
-    country = Column(String(5))
-    country_name = Column(String(50))
-    lon = Column(String(50))
-    lat = Column(String(50))
     ipsrc = relationship(IP)
     
 class ConScanDB(Base):
@@ -60,6 +65,7 @@ class NmapScanDB(Base):
 
 class Con:
     def __init__(self, username, password):
+        self.deleted = False
         self.base = Base
         u = hashlib.md5()
         u.update(username)
@@ -112,5 +118,13 @@ class Con:
             fo.write(dec)        
 
     def close(self):
-        self.encrypt_file(self.db_name, self.password)
+        if self.deleted == False:
+            self.encrypt_file(self.db_name, self.password)
         pass
+
+    def delete(self):
+        try:
+            remove(self.db_name)
+            self.deleted = True
+        except Exception as e:
+            print "Erro: %s" % e

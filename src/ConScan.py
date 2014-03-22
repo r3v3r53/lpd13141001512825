@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from classes import IP, ConScanDB
 from datetime import datetime
+import GeoIP
 
 class ConScan:
     def __init__(self, db_name, base):
@@ -14,6 +15,7 @@ class ConScan:
         self.base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
+        self.scan()
 
     def scan(self):
         print "Starting Scan for local Connections"
@@ -29,7 +31,9 @@ class ConScan:
             for c in con:
 
                 if len(c.raddr) > 0:
-                    new_ip = IP(ip=c.raddr[0])
+                    gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
+                    geo = gi.record_by_addr(c.raddr[0])        
+                    new_ip = IP(ip=c.raddr[0], country=geo['country_code'], country_name=geo['country_name'], lon=geo['longitude'], lat=geo['latitude'])
                     #check if ip address is in database
                     ip = self.session.query(IP).filter_by(ip=c.raddr[0]).first()
 

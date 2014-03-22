@@ -1,9 +1,7 @@
 #!/usr/bin/python
-# ver ArgumentParser.add_subparsers
 # http://docs.python.org/2/library/argparse.html#choices
 import sys, getopt, argparse
-import os
-import sys
+import os, sys, getpass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,44 +19,36 @@ def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--username",
                         required=True)
-    parser.add_argument("-p", "--password",
-                        required=True)
-    parser.add_argument("-a", "--action",
-                        required=True,
-                        choices=["portscan", "conscan", "logscan", "export"],
-                        help="Perform a scan for ips in a network")
-    parser.add_argument("-ip",
+    parser.add_argument("-portscan", nargs=2, metavar=('ip', 'ports'),
                         required=False,
-                        help="IP (or range) toScan")
-    parser.add_argument("-ports",
+                        help="Perform a portscan")
+    parser.add_argument("-conscan", action='store_true',
                         required=False,
-                        help="Port (or range) to scan")
-    parser.add_argument("-f", "--file",
+                        help="Scan for local connections")
+    parser.add_argument("-logscan", nargs=1, metavar=('file'),
                         required=False,
-                        help="Log File to scan")
-    parser.add_argument("-t", "--type",
+                        help="Store log connections into database")
+    parser.add_argument("-export", nargs=2, metavar=('filetype', 'filename'),
                         required=False,
-                        help="Type of export (pdf, csv or db)")
-    parser.add_argument("-filename", nargs=2, metavar=('name','type'),
+                        help="export database [db, csv, pdf]")
+    parser.add_argument("-delete", action="store_true",
                         required=False,
-                        help="File name and type to export")
-                        
+                        help="Delete database")
 
     args = parser.parse_args()
-    con = Con(args.username, args.password)
-   
-    if args.action == 'portscan':
-        scan = NmapScan(con.db_name, con.base, args.ip, args.ports)
-        
-    elif args.action == 'conscan':
-        scan = ConScan(con.db_name, con.base)
-
-    elif args.action == 'logscan':
-        scan = LogScan(con.db_name, con.base, args.file)
-    elif args.action == 'export':
-        scan = Export(con.db_name, con.base, args.filename[0], args.filename[1])
-    try:
-        scan.scan()
+    password = getpass.getpass('Password:')
+    con = Con(args.username, password)
+    try:                  
+        if args.portscan:
+            scan = NmapScan(con.db_name, con.base, args.portscan[0], args.portscan[1])        
+        elif args.conscan:
+            scan = ConScan(con.db_name, con.base)
+        elif args.logscan:
+            scan = LogScan(con.db_name, con.base, args.logscan[0])
+        elif args.export:
+            scan = Export(con.db_name, con.base, args.export[1], args.export[0])
+        elif args.delete:
+            con.delete()
     finally:
         con.close()
 

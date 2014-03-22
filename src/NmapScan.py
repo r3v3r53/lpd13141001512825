@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from classes import IP, NmapScanDB
 from datetime import datetime
-
+import GeoIP
 
 class NmapScan:
     def __init__(self, db_name, base, ip, port):
@@ -16,6 +16,7 @@ class NmapScan:
         self.base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         self.session = DBSession()
+        self.scan()
 
 
     def scan(self):
@@ -23,7 +24,9 @@ class NmapScan:
         nm.scan(self.ip, self.port)
         now = datetime.now()
         for host in nm.all_hosts():
-            new_ip = IP(ip=host)
+            gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
+            geo = gi.record_by_addr(host)        
+            new_ip = IP(ip=host, country=geo['country_code'], country_name=geo['country_name'], lon=geo['longitude'], lat=geo['latitude'])
             #check if ip address is in database
             ip_address = self.session.query(IP).filter_by(ip=host).first()
 
