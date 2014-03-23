@@ -55,6 +55,8 @@ class Export:
             self.csv()
         elif self.filetype == "pdf":
             self.pdf()
+        else:
+            print "ERROR: File types permitted: csv, pdf and db"
         pass
 
     def csv(self):
@@ -64,7 +66,7 @@ class Export:
         '''
         filename = "%s.csv" %self.filename
         try:
-            spamWriter = csv.writer(open(filename, 'wb'), delimiter=',',
+            spamWriter = csv.writer(open(filename, 'wb'), delimiter=';',
                                     quotechar='\x22', quoting=csv.QUOTE_MINIMAL)
             # leitura de todas as conscans
             conscans = self.session.query(ConScanDB).all()
@@ -100,9 +102,9 @@ class Export:
                                 + ["[Event]"]
                                 + ["[Device]"]
                                 + ["[Protocol]"]
-                                + ["TTL"]
-                                + ["Src Port"]
-                                + ["Dst Port"])
+                                + ["[TTL]"]
+                                + ["[Src Port]"]
+                                + ["[Dst Port]"])
             for line in logscans:
                 spamWriter.writerow([line.time]
                                     + [line.ipsrc.ip]
