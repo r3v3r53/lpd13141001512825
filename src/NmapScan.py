@@ -64,7 +64,9 @@ class NmapScan:
                         lon=lon_, 
                         lat=lat_)
             #check if ip address is in database
-            ip_address = self.session.query(IP).filter_by(ip=host).first()
+            ip_address = self.session.query(
+                IP).filter_by(
+                ip=host).first()
 
             if ip_address == None:
                 self.session.add(new_ip)
