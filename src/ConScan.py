@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Scan a conecções activas na máquina local
+
+@author Pedro Moreira
+@author João Carlos Mendes
+@date 20140323
+
+'''
 import psutil
 import socket
 from socket import AF_INET, SOCK_STREAM, SOCK_DGRAM
@@ -8,7 +17,17 @@ from datetime import datetime
 import GeoIP
 
 class ConScan:
+    '''
+    Classe para conecções activas na máquina local
+    '''
     def __init__(self, db_name, base):
+        '''
+        Constructor
+        Cria a ligação à base de dados e efectua o scan
+
+        @arg db_name: nome do ficheiro com a base de dados
+        @arg base: alchemy declarative_base() 
+        '''
         self.db_name = db_name
         self.base = base
         engine = create_engine('sqlite:///%s' % self.db_name)
@@ -18,6 +37,14 @@ class ConScan:
         self.scan()
 
     def scan(self):
+        '''
+        Função para efectuar o scan
+        de conecções activas à máquina local
+        Grava na base de dados o IP 
+        com a respectiva georeferencia
+        e os resultados obtidos.
+        Simultâneamente os mesmos são impressos na consola
+        '''
         print "Starting Scan for local Connections"
         AF_INET6 = getattr(socket, 'AF_INET6', object())
         proto_map = {(AF_INET, SOCK_STREAM)  : 'TCP',

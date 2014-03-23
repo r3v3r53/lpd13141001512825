@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# -*- codig:utf-8 -*-
 import re
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,27 +7,51 @@ from datetime import datetime
 import GeoIP
 
 class LogScan:
+    '''
+    Classe para armazenar resultados de 
+    ficheiros de log em base de dados
+    '''
     def __init__(self, db_name, base, logfile):
-        self.db_name = db_name
-        self.base = base
-        self.logfile = logfile
-        engine = create_engine('sqlite:///%s' % self.db_name)
-        self.base.metadata.bind = engine
-        DBSession = sessionmaker(bind=engine)
-        self.session = DBSession()
-        self.logfile = logfile
-        self.scan()
+         '''
+         Constructor
+         Efectua a ligacao a base de dados fornecida
+         e inicia o armazenamento dos dados 
+         
+         @arg db_name: nome do ficheiro com a base de dados
+         @arg base: alchemy declarative_base()
+         @arg logfile: ficheiro com o log da firewall
+         '''
+         self.db_name = db_name
+         self.base = base
+         self.logfile = logfile
+         engine = create_engine('sqlite:///%s' % self.db_name)
+         self.base.metadata.bind = engine
+         DBSession = sessionmaker(bind=engine)
+         self.session = DBSession()
+         self.logfile = logfile
+         self.scan()
 
     def scan(self):
+        '''
+        Funcao para efectuar o armazenamento
+        dos dados do log na base de dados
+        '''
         try:
             logfile = open(self.logfile, 'r')
             self.parse(logfile)
             self.session.commit()
         except Exception, e:
-            print "[-] " + str(e)
-            
+            print "[-] " + str(e)    
 
     def parse(self, logfile):
+        '''
+        Funcao para o parse do log
+        Grava na base de dados o IP 
+        com a respectiva georeferencia
+        e os resultados obtidos.
+        Simultaneamente os mesmos sao impressos na consola
+        '''
+       
         for line in logfile.readlines():
             debug = 0
             if not re.search("SRC=192", line) and not re.search("SRC=0", line) and not re.search("SRC=172", line):
@@ -49,7 +73,7 @@ class LogScan:
                 else:
                     eventSrc = "IN"
 
-            #PROTO
+            #PROTOCOL
                 proto=line.split("PROTO=")
                 protoInf=proto[1].split(' ')[0]
 
@@ -70,8 +94,7 @@ class LogScan:
                     gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
                     geo = gi.record_by_addr(ip_src)        
                     new_ip = IP(ip=ip_src, country=geo['country_code'], country_name=geo['country_name'], lon=geo['longitude'], lat=geo['latitude'])
-                    
-            #check if ip address is in database
+                    #check if ip address is in database
                     ip_address = self.session.query(IP).filter_by(ip=ip_src).first()
 
                     if ip_address == None:
