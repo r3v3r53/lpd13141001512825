@@ -1,4 +1,4 @@
-# -*- codig:utf-8 -*-
+# -*- coding:utf-8 -*-
 import re
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +14,7 @@ class LogScan:
     def __init__(self, db_name, base, logfile):
          '''
          Constructor
-         Efectua a ligacao a base de dados fornecida
+         Efectua a ligação à base de dados fornecida
          e inicia o armazenamento dos dados 
          
          @arg db_name: nome do ficheiro com a base de dados
