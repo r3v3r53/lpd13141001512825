@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # http://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/
 #
-# http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes 
+# http://stackoverflow.com/questions/20852664/python-pycrypto-encrypt-decrypt-text-files-with-aes
 # pip install -U setuptools
 # https://github.com/maxmind/geoip-api-python
 # apt-get install libgeoip-dev --> https://trac.torproject.org/projects/tor/ticket/10625
@@ -10,7 +10,7 @@
 '''
 Network Security Application Database classes
 A base de dados é gerada com auxílio do Alchemy
-O nome da base de dados é criada a partir 
+O nome da base de dados é criada a partir
 do username e password fornecidos.
 Caso o ficheiro exista, este é decifrado para ser utilizado
 no final das operações deve ser cifrado de novo
@@ -19,7 +19,7 @@ no final das operações deve ser cifrado de novo
 @author João Carlos Mendes
 @date 20140323
 
-''' 
+'''
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -34,7 +34,7 @@ Base = declarative_base()
 class IP(Base):
     '''
     Classe para a criação da tabela IP
-    Armazena os endereços ip relacionados 
+    Armazena os endereços ip relacionados
     com todos os scans efectuados
     '''
     __tablename__ = 'ip'
@@ -63,7 +63,7 @@ class LogScanDB(Base):
     src_port = Column(Integer)
     dst_port = Column(Integer)
     ipsrc = relationship(IP)
-    
+   
 class ConScanDB(Base):
     '''
     Classe para a criação da tabela conscan
@@ -124,7 +124,7 @@ class Con:
         m.update(db)
         self.hash = m.hexdigest()
         self.db_name = '%s.db' % self.hash
-        
+       
         try:
             self.decrypt_file(self.db_name, self.password)
         except:
@@ -134,7 +134,7 @@ class Con:
 
     def pad(self, s):
         '''
-        preencher string para ter o tamanho da chave 
+        preencher string para ter o tamanho da chave
         a utilizar para a cifra
 
         @arg s: string a converter
@@ -168,7 +168,7 @@ class Con:
         cipher = AES.new(key, AES.MODE_CBC, iv)
         plaintext = cipher.decrypt(ciphertext[AES.block_size:])
         return plaintext.rstrip(b"\0")
-    
+   
     def encrypt_file(self, file_name, key):
         '''
         função para cifrar um ficheiro com aes-cbc
@@ -199,7 +199,7 @@ class Con:
         '''
         função utilizada para cifrar a base de dados,
         caso esta não tenha sido eliminada
-        Esta função deve ser chamada 
+        Esta função deve ser chamada
         no final da execução do programa
         '''
         if self.deleted == False:
@@ -215,3 +215,4 @@ class Con:
             self.deleted = True
         except Exception as e:
             print "Erro: %s" % e
+
