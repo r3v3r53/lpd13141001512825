@@ -17,8 +17,7 @@ USAGE:
 @date 20140323
 
 '''
-import sys, getopt, argparse
-import os, sys, getpass
+import sys, getopt, argparse, os, getpass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base

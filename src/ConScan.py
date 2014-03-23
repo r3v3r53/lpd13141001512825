@@ -52,24 +52,38 @@ class ConScan:
                      (AF_INET, SOCK_DGRAM)   : 'UDP',
                      (AF_INET6, SOCK_DGRAM)  : 'UDP6'}
         for p in psutil.process_iter():
-            program = p.name
-            con = p.get_connections(kind='inet')
+            try:
+                program = p.name
+                con = p.get_connections(kind='inet')
 
-            for c in con:
-
-                if len(c.raddr) > 0:
-                    gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
-                    geo = gi.record_by_addr(c.raddr[0])        
-                    new_ip = IP(ip=c.raddr[0], country=geo['country_code'], country_name=geo['country_name'], lon=geo['longitude'], lat=geo['latitude'])
+                for c in con:
+                    
+                    if c.raddr:
+                        try:
+                            gi = GeoIP.open('GeoLiteCity.dat', GeoIP.GEOIP_STANDARD)
+                            geo = gi.record_by_addr(c.raddr[0])
+                            country_ = geo['country_code']
+                            country_name_ = geo['country_name']
+                            lon_ = geo['longitude']
+                            lat_ = geo['latitude']
+                        except:
+                            country_ = None
+                            country_name_ = None
+                            lon_ = None
+                            lat_ = None
+                        new_ip = IP(ip=c.raddr[0], country=country_, country_name=country_name_, lon=lon_, lat=lat_)
                     #check if ip address is in database
-                    ip = self.session.query(IP).filter_by(ip=c.raddr[0]).first()
+                        ip = self.session.query(IP).filter_by(ip=c.raddr[0]).first()
 
-                    if ip == None:
-                        self.session.add(new_ip)
-                        ip = new_ip
+                        if ip == None:
+                            self.session.add(new_ip)
+                            ip = new_ip
 
-                    con = ConScanDB(local_port=c.laddr[1], remote_port=c.raddr[1],
-                        time=datetime.now(), remote_ip=ip)
-                    self.session.add(con)
-                    print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s, Name: %s, Pid: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status, p.name(), p.pid)
+                        con = ConScanDB(local_port=c.laddr[1], remote_port=c.raddr[1],
+                                        time=datetime.now(), remote_ip=ip)
+                        self.session.add(con)
+                        
+                        print "Local Port: %s, Remote IP: %s, Remote Port: %s, Status: %s, Name: %s, Pid: %s" % (c.laddr[1], c.raddr[0], c.raddr[1], c.status, p.name(), p.pid)
+            except:
+                pass
         self.session.commit()
